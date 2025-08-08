@@ -1,0 +1,7 @@
+ignoredBuiltDependencies:
+  - '@parcel/watcher'
+  - electron
+  - electron-winstaller
+  - esbuild
+  - javascript-obfuscator
+  - vue-demi
