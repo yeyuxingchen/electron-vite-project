@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import {onMounted, ref, watch} from "vue";
+import {computed, onMounted, ref, watch} from "vue";
 const modalTheme = {
   default: {
     background: '#aaaaaa99',
@@ -114,6 +114,19 @@ function changeFullscreen(is_full: boolean) {
   emit('fullChange', is_full)
 }
 
+const dialogHeaderType = computed(() => {
+  if (['success', 'primary', 'info', 'warning', 'danger'].filter(i => props.type.includes(i)).length) {
+    return `var(--el-color-${props.type})`
+  }
+  const custom = {
+    'black': '#2B2D30',
+    'black-transparent': '#2B2D30aa',
+    'dark': '#000000',
+    'dark-transparent': '#000000aa'
+  }
+  return custom[props.type]
+})
+
 onMounted(() => {
   show.value = props.modelValue
   updateModalStyle(props.modelStyle)
@@ -126,7 +139,7 @@ onMounted(() => {
     :fullscreen="fullscreen" class="my-dialog" :show-close="false"
     :top="top" :before-close="dialogBeforeClose"
     :width="width" @close="close" append-to-body
-    :style="{'--radius': Number(radius) ? (radius + 'px') : radius, '--type': `var(--el-color-${type})`}"
+    :style="{'--radius': Number(radius) ? (radius + 'px') : radius, '--type': dialogHeaderType}"
     :modal-class="`modal-${dialogId}`"
   >
     <template #header>

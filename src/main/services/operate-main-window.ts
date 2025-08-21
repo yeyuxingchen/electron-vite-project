@@ -1,4 +1,5 @@
 import {BrowserWindow, dialog, app} from "electron";
+import ExcelJS from "exceljs";
 
 export const operateMainWindow = [
   {
@@ -28,6 +29,21 @@ export const operateMainWindow = [
       mainWindow.webContents.openDevTools({
         mode: 'undocked',
         activate: true,
+      })
+    },
+  },
+  {
+    channel: 'operateExcel',
+    handler: (event: Electron.IpcMainInvokeEvent, path: string) => {
+      return new Promise(async resolve => {
+        const workbook = new ExcelJS.Workbook();
+        await workbook.xlsx.readFile(path);
+        const worksheet = workbook.getWorksheet(1);
+        const values = []
+        worksheet.eachRow((row, rowNumber) => {
+          values.push(row.values)
+        });
+        resolve(values)
       })
     },
   },

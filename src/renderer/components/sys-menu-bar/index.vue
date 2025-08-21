@@ -2,6 +2,7 @@
 
 import {MenuBar, MenuBarOptions, MenuItem} from '@imengyu/vue3-context-menu';
 import About from './about/index.vue'
+import Setting from './setting/index.vue'
 import {computed, reactive} from "vue";
 import router from "@renderer/router";
 
@@ -19,7 +20,7 @@ const defaultClickHandler = () => {
 
 // 递归处理菜单项
 function processMenuItems(items: MenuItem[]): MenuItem[] {
-  return items.map(item => {
+  return items.filter(item => !item.development || process.env.NODE_ENV === 'development').map(item => {
     const processedItem = { ...item };
 
     // 如果没有onClick事件，则添加默认处理函数
@@ -102,6 +103,13 @@ const menuData: MenuBarOptions = {
           }
         },
         {
+          label: "设置",
+          development: true,
+          onClick: () => {
+            dialog.setting = true
+          }
+        },
+        {
           label: "关于",
           onClick: () => {
             dialog.about = true
@@ -120,12 +128,16 @@ const menuOptions = computed(() => {
 
 const dialog = reactive({
   about: false,
+  setting: false,
   nothing: false
 })
 
 const propsConfig = {
   about: {
     radius: '5', title: '帮助', width: '400px', height: '200px'
+  },
+  setting: {
+    radius: '5', title: '设置', width: 'calc(100vw - 40vh)', height: '70vh', type: 'black-transparent', top: '11vh'
   },
   nothing: {
     radius: '5', title: '提示', type: 'success', width: '350px', height: '150px'
@@ -147,6 +159,10 @@ const propsConfig = {
       <div flex items-center justify-center font-size-12px h-full>
         什么功能也没有，只是为了凑字数...
       </div>
+    </fa-dialog>
+
+    <fa-dialog v-model="dialog.setting" v-bind="propsConfig.setting">
+      <setting />
     </fa-dialog>
   </div>
 </template>
