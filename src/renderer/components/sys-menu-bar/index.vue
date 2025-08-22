@@ -8,6 +8,10 @@ import router from "@renderer/router";
 
 const { ipcRendererChannel } = window
 
+interface MenuItemMe extends MenuItem {
+  development?: boolean;
+}
+
 defineOptions({
   name: 'SysMenuBar',
 })
@@ -19,7 +23,7 @@ const defaultClickHandler = () => {
 };
 
 // 递归处理菜单项
-function processMenuItems(items: MenuItem[]): MenuItem[] {
+function processMenuItems(items: MenuItemMe[]): MenuItemMe[] {
   return items.filter(item => !item.development || process.env.NODE_ENV === 'development').map(item => {
     const processedItem = { ...item };
 
@@ -37,7 +41,7 @@ function processMenuItems(items: MenuItem[]): MenuItem[] {
   });
 }
 
-const menuData: MenuBarOptions = {
+const menuData = {
   items: [
     {
       label: "文件",
@@ -98,21 +102,33 @@ const menuData: MenuBarOptions = {
       children: [
         {
           label: "控制台",
+          development: true,
           onClick: () => {
             ipcRendererChannel.openDevTools.invoke()
           }
         },
         {
           label: "设置",
-          development: true,
           onClick: () => {
-            dialog.setting = true
+            dialog.setting = !dialog.setting
+          }
+        },
+        {
+          label: '计算器',
+          onClick: () => {
+            box.test = !box.test
+          }
+        },
+        {
+          label: '首页',
+          onClick: () => {
+            router.push('/')
           }
         },
         {
           label: "关于",
           onClick: () => {
-            dialog.about = true
+            dialog.about = !dialog.about
           }
         },
       ],
@@ -130,6 +146,10 @@ const dialog = reactive({
   about: false,
   setting: false,
   nothing: false
+})
+
+const box = reactive({
+  test: false
 })
 
 const propsConfig = {
@@ -164,22 +184,47 @@ const propsConfig = {
     <fa-dialog v-model="dialog.setting" v-bind="propsConfig.setting">
       <setting />
     </fa-dialog>
+
+    <fa-box v-model="box.test" radius="5px" icon="calc" title="计算器" height="380px" width="260px">
+      <div>
+        <fa-calc/>
+      </div>
+    </fa-box>
   </div>
 </template>
 
 <style scoped lang="scss">
 :deep(.mx-menu-bar) {
   padding: 0;
+  background: transparent;
 
   .mx-menu-bar-item {
     padding-bottom: 0;
     font-size: 13px;
     padding-top: 2px;
     height: 31px;
+    color: rgb(var(--sys-bar-color));
+    background: rgb(var(--sys-bar-background));
   }
 }
 
 :global(#mx-menu-default-container) {
   z-index: 3000 !important;
+}
+:global(.mx-context-menu) , :global(.mx-context-menu-item-sperator){
+  background: rgb(var(--sys-bar-background)) !important;
+}
+:global(.mx-context-menu-item-sperator:after) {
+  background: rgb(var(--sys-bar-border)) !important;
+}
+:global(.mx-context-menu-item){
+  background: rgb(var(--sys-bar-background))!important;
+}
+:global(.mx-context-menu-item:hover), :global(.mx-menu-bar-item.active), :global(.mx-menu-bar-item:hover), :global(.mx-context-menu-item.open){
+  background: rgb(var(--sys-bar-background-hover))!important;
+  color: rgb(var(--sys-bar-color)) !important;
+}
+:global(.mx-item-row){
+  color: rgb(var(--sys-bar-color)) !important;
 }
 </style>

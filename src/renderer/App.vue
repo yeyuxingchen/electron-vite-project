@@ -9,6 +9,12 @@
 
 <script setup lang="ts">
 import TitleBar from '@renderer/components/title-bar/title-bar.vue'
+import useSettingsStore from "@store/settings";
+import {onMounted} from "vue";
+const settingsStore = useSettingsStore()
+onMounted(() => {
+  settingsStore.updateSystemBar()
+})
 </script>
 
 <style scoped>

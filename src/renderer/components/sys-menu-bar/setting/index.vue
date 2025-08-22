@@ -1,6 +1,7 @@
 <script setup lang="ts">
 
-import {reactive, ref} from "vue";
+import {onMounted, reactive, ref} from "vue";
+import useSettingsStore from "@store/settings";
 
 const carRef = ref(null)
 const menus = reactive([
@@ -14,20 +15,56 @@ const menus = reactive([
 
 const theme = reactive({
   light: {
-    background: '#fff',
-    color: '#333',
-    border: '#F2F2F2',
+    background: '255 255 255',
+    color: '51 51 51',
+    border: '242 242 242',
+    panel: '255 255 255',
+    "background-hover": '241 241 241'
   },
   dark: {
-    background: '#333',
-    color: '#fff',
-    border: '#1E1F22',
+    background: '51 51 51',
+    color: '255 255 255',
+    border: '30 31 34',
+    panel: '30 31 34',
+    "background-hover": '46 67 110'
+  },
+  purple: {
+    background: '196 183 215',
+    color: '51 51 51',
+    border: '187 176 207',
+    panel: '245 245 245',
+    "background-hover": '237 232 239'
+  },
+  yellow: {
+    background: '238 232 213',
+    color: '51 51 51',
+    border: '212 212 212',
+    panel: '253 246 227',
+    "background-hover": '223 202 136'
+  },
+  blue: {
+    background: '17 34 51',
+    color: '255 255 255',
+    border: '14 44 69',
+    panel: '1 22 39',
+    "background-hover": '40 52 64'
   }
 })
 
 function handleOpen(val: any) {
   carRef.value.setActiveItem(val)
 }
+const settingsStore = useSettingsStore()
+const activeTheme = ref('light')
+function setTheme(key: any, val: any) {
+  activeTheme.value = key
+  localStorage.setItem('sys.bar.theme',  key)
+  settingsStore.setSystemBar(val)
+}
+
+onMounted(() => {
+  activeTheme.value = localStorage.getItem('sys.bar.theme') || 'light'
+})
 </script>
 
 <template>
@@ -58,15 +95,20 @@ function handleOpen(val: any) {
           </div>
           <div class="system-theme"
                v-for="(val, key) in theme" :key="key"
-               flex flex-col rounded-5px overflow-hidden w-100px float-left mr-20px
+               flex flex-col rounded-5px overflow-hidden w-100px float-left mr-20px mb-20px
                style="box-shadow: 0 0 5px #ddd;"
+               @click="setTheme(key, val)"
           >
             <div flex items-center justify-between pr-5px h-20px w-100px text-8px line-height-20px
-                 :style="{'border-bottom': `1px solid ${val.border}`, background: val.background, color: val.color}">
+                 :style="{'border-bottom': `1px solid rgb(${val.border})`, background: `rgb(${val.background})`, color: `rgb(${val.color})`}">
               <span pl-5px>菜单</span>
               <fa-icon name="close" size="3"/>
             </div>
-            <div w-100px h-80px :style="{'background': val.background}"/>
+            <div w-100px h-80px flex items-center justify-center :style="{'background': `rgb(${val.background})`}">
+              <div v-if="key === activeTheme" flex items-center justify-center rounded-23px w-23px h-23px bg-green mb-15px>
+                <fa-icon name="yes" color="white" />
+              </div>
+            </div>
           </div>
         </div>
         <div v-else>
@@ -98,5 +140,8 @@ function handleOpen(val: any) {
   &:active{
     transform: scale(.95);
   }
+}
+:deep(.el-carousel__indicators) {
+  display: none;
 }
 </style>

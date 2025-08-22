@@ -39,7 +39,7 @@ ipcRendererChannel.IsUseSysTitle.invoke().then((res) => {
   width: 100%;
   height: 31px;
   line-height: 30px;
-  background-color: #ffffff;
+  background-color: rgb(var(--sys-bar-background));
   display: flex;
   //-webkit-app-region: drag;
   position: fixed;

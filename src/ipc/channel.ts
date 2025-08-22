@@ -62,6 +62,7 @@ export class IpcChannelMainClass {
   fullScreenAndOnTop: IpcMainEventListener = null
   openDialog: IpcMainEventListener<OpenDialogOptions, OpenDialogReturnValue> = null
   operateExcel: IpcMainEventListener<String, Array<Object>> = null
+  changeSystemBar: IpcMainEventListener<Object, Array<Object>> = null
   forExample: IpcMainEventListener<void, string> = null
   openDevTools: IpcMainEventListener = null
   ConfirmUpdate: IpcMainEventListener = null

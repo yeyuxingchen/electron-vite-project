@@ -8,6 +8,8 @@ export {}
 /* prettier-ignore */
 declare module 'vue' {
   export interface GlobalComponents {
+    FaBox: typeof import('./../ui/components/FaBox/index.vue')['default']
+    FaCalc: typeof import('./../ui/components/FaCalc/index.vue')['default']
     FaDialog: typeof import('./../ui/components/FaDialog/index.vue')['default']
     FaIcon: typeof import('./../ui/components/FaIcon/index.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']

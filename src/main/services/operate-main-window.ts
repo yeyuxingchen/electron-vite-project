@@ -48,6 +48,16 @@ export const operateMainWindow = [
     },
   },
   {
+    channel: 'changeSystemBar',
+    handler: (event: Electron.IpcMainInvokeEvent, args: any) => {
+      const mainWindow = BrowserWindow.fromWebContents(event.sender)
+      mainWindow.setTitleBarOverlay({
+        color: args.background,
+        symbolColor: args.color
+      })
+    },
+  },
+  {
     channel: 'forExample',
     handler: (event: Electron.IpcMainInvokeEvent) => {
       return new Promise(resolve => {
