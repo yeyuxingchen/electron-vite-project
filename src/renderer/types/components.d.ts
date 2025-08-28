@@ -10,10 +10,12 @@ declare module 'vue' {
   export interface GlobalComponents {
     FaBox: typeof import('./../ui/components/FaBox/index.vue')['default']
     FaCalc: typeof import('./../ui/components/FaCalc/index.vue')['default']
+    FaCalcComplex: typeof import('./../ui/components/FaCalcComplex/index.vue')['default']
     FaDialog: typeof import('./../ui/components/FaDialog/index.vue')['default']
     FaIcon: typeof import('./../ui/components/FaIcon/index.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
+    SysBarTips: typeof import('./../components/sys-bar-tips/index.vue')['default']
     SysMenuBar: typeof import('./../components/sys-menu-bar/index.vue')['default']
   }
 }

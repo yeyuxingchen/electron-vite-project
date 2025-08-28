@@ -9,20 +9,17 @@ const routes: Array<RouteRecordRaw> = [
   {
     path: '/',
     name: '总览',
-    component: Software,
-    children: [
-      {
-        path: '',
-        name: '首页',
-        component: () => import('@renderer/views/home-page/index.vue'),
-      }
-    ]
-    // component: () => import('@renderer/views/landing-page/LandingPage.vue'),
+    redirect: '/tools/markdown/editor'
   },
   {
     path: '/tools/nginx',
     name: 'nginx',
     component: () => import('@renderer/views/tools/nginx/index.vue'),
+  },
+  {
+    path: '/tools/markdown/editor',
+    name: 'markdown-editor',
+    component: () => import('@renderer/views/tools/markdown/index.vue'),
   }
 ]
 

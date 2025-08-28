@@ -51,6 +51,10 @@ const props = defineProps({
   modelStyle: {
     type: Object,
     default: () => ({})
+  },
+  destroyOnClose: {
+    type: Boolean,
+    default: false,
   }
 })
 const emit = defineEmits(['update:modelValue', 'fullChange'])
@@ -84,7 +88,7 @@ onMounted(() => {
     :top="top" :before-close="dialogBeforeClose"
     :width="width" @close="close" append-to-body
     :style="{'--radius': Number(radius) ? (radius + 'px') : radius, '--type': dialogHeaderType}"
-    :modal-class="`modal-${dialogId}`"
+    :modal-class="`modal-${dialogId}`" :destroy-on-close="destroyOnClose"
   >
     <template #header>
       <div class="main-title">

@@ -1,6 +1,8 @@
 <script setup lang="ts">
 
 
+import FaCalcComplex from "@renderer/ui/components/FaCalcComplex/index.vue";
+
 const { ipcRendererChannel } = window
 import {computed, onMounted, ref} from "vue";
 import ExcelJS from 'exceljs'
@@ -115,6 +117,8 @@ const tableValues = computed(() => {
     <el-table :data="tableValues" style="width: calc(100vw - 130px)" height="calc(100vh - 330px)">
       <el-table-column v-for="prop in tableHeaders" :prop="prop" :label="prop" />
     </el-table>
+
+    <fa-calc-complex />
   </div>
 </template>
 

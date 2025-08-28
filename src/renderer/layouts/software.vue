@@ -2,13 +2,20 @@
 
 import TitleBar from "@renderer/components/title-bar/title-bar.vue";
 import SoftAside from "@renderer/layouts/components/SoftAside.vue";
+
+defineProps({
+  withAside: {
+    type: Boolean,
+    default: true
+  }
+})
 </script>
 
 <template>
   <div h-full>
     <title-bar/>
     <div flex h-full class="page-main">
-      <soft-aside />
+      <soft-aside v-if="withAside" />
       <div class="main">
         <RouterView v-slot="{ Component, route }">
           <component :is="Component" :key="route.fullPath"/>

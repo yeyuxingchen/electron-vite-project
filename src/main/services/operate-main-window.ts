@@ -1,5 +1,6 @@
 import {BrowserWindow, dialog, app} from "electron";
 import ExcelJS from "exceljs";
+import fs from 'fs'
 
 export const operateMainWindow = [
   {
@@ -19,6 +20,31 @@ export const operateMainWindow = [
         dialog.showOpenDialog(mainWindow, args).then((result) => {
           resolve(result)
         })
+      })
+    },
+  },
+  {
+    channel: 'openSaveDialog',
+    handler: (event: Electron.IpcMainInvokeEvent, args: any) => {
+      const mainWindow = BrowserWindow.fromWebContents(event.sender)
+      return new Promise(resolve => {
+        dialog.showSaveDialog(mainWindow, args).then((result) => {
+          resolve(result)
+        })
+      })
+    }
+  },
+  {
+    channel: 'writeFile',
+    handler: (event: Electron.IpcMainInvokeEvent, args: any) => {
+      const { name, content} = args
+      return new Promise((resolve, reject) => {
+        try {
+          fs.writeFileSync(name, content, "utf-8");
+          resolve(true)
+        } catch (err) {
+          reject(err)
+        }
       })
     },
   },

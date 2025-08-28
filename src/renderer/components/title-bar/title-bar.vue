@@ -8,8 +8,9 @@
       />
     </div>
     <!-- 菜单栏位置 -->
-    <div>
+    <div flex justify-between items-center style="width: calc(100vw - 200px)">
       <sys-menu-bar />
+      <sys-bar-tips flex-1/>
     </div>
     <!-- 中间标题位置 -->
     <div class="title"></div>

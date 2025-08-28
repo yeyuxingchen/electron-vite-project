@@ -126,6 +126,12 @@ const menuData = {
           }
         },
         {
+          label: '绑定',
+          onClick: () => {
+            dialog.about = !dialog.about
+          }
+        },
+        {
           label: "关于",
           onClick: () => {
             dialog.about = !dialog.about
@@ -157,7 +163,7 @@ const propsConfig = {
     radius: '5', title: '帮助', width: '400px', height: '200px'
   },
   setting: {
-    radius: '5', title: '设置', width: 'calc(100vw - 40vh)', height: '70vh', type: 'black-transparent', top: '11vh'
+    radius: '5', title: '设置', width: 'calc(100vw - 40vh)', height: '70vh', type: 'black-transparent', top: '11vh', destroyOnClose: true
   },
   nothing: {
     radius: '5', title: '提示', type: 'success', width: '350px', height: '150px'
