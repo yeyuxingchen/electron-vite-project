@@ -46,10 +46,10 @@ const menuData = {
     {
       label: "文件",
       children: [
-        {label: "New"},
-        {label: "Open"},
+        {label: "新建"},
+        {label: "打开"},
         {
-          label: "Open recent",
+          label: "打开最近文件",
           children: [
             {label: "File 1...."},
             {label: "File 2...."},
@@ -58,10 +58,10 @@ const menuData = {
             {label: "File 5...."},
           ],
         },
-        {label: "Save", divided: true},
-        {label: "Save as..."},
-        {label: "Close"},
-        {label: "Exit"},
+        {label: "保存", divided: true},
+        {label: "另存为..."},
+        {label: "关闭"},
+        {label: "退出"},
       ],
     },
     {
