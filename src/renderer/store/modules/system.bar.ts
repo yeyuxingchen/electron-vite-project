@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import {reactive} from "vue";
+import {reactive, ref} from "vue";
 
 interface BarInfo {
   tips?: string
@@ -17,15 +17,31 @@ const useStoreSystemBar = defineStore('systemBar', () => {
     icon: '',
     iconSize: 12,
   })
+  const recentFiles = ref(JSON.parse(localStorage.getItem('recent.files') || '[]'))
+
+
   function setSystemBar(barInfo: BarInfo) {
     for (const key in barInfo) {
       systemBar[key] = barInfo[key]
     }
   }
 
+  function setRecentFile({label, path, time}){
+    const isExist = recentFiles.value.some(i => i.path === path)
+    if (isExist) {
+      recentFiles.value.filter(i => i.path === path).forEach(i => (i.time = new Date().getTime()))
+    } else {
+      recentFiles.value.push({ label, path, time })
+    }
+    recentFiles.value.sort((a, b) => b.time - a.time)
+    localStorage.setItem('recent.files', JSON.stringify(recentFiles.value))
+  }
+
   return {
     systemBar,
-    setSystemBar
+    setSystemBar,
+    recentFiles,
+    setRecentFile
   }
 })
 

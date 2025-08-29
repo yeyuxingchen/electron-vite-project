@@ -49,6 +49,20 @@ export const operateMainWindow = [
     },
   },
   {
+    channel: 'readFile',
+    handler: (event: Electron.IpcMainInvokeEvent, args: any) => {
+      const { path } = args
+      return new Promise((resolve, reject) => {
+        try {
+          const content = fs.readFileSync(path, "utf-8");
+          resolve(content)
+        } catch (err) {
+          reject(err)
+        }
+      })
+    },
+  },
+  {
     channel: 'openDevTools',
     handler: (event: Electron.IpcMainInvokeEvent) => {
       const mainWindow = BrowserWindow.fromWebContents(event.sender)

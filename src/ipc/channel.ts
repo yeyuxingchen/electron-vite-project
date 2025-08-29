@@ -63,6 +63,7 @@ export class IpcChannelMainClass {
   openDialog: IpcMainEventListener<OpenDialogOptions, OpenDialogReturnValue> = null
   openSaveDialog: IpcMainEventListener<OpenDialogOptions, OpenDialogReturnValue> = null
   writeFile: IpcMainEventListener<{ name: string; content: string }, boolean> = null
+  readFile: IpcMainEventListener<{ path: string }, string> = null
   operateExcel: IpcMainEventListener<String, Array<Object>> = null
   changeSystemBar: IpcMainEventListener<Object, Array<Object>> = null
   forExample: IpcMainEventListener<void, string> = null

@@ -1,9 +1,17 @@
 <script setup lang="ts">
-import {ref} from "vue";
+import {onMounted, onUnmounted, ref} from "vue";
 import {MdEditor, ToolbarNames} from 'md-editor-v3';
 import 'md-editor-v3/lib/style.css';
-import {debounce} from "@renderer/utils/utils";
+import {debounce, timeFormat} from "@renderer/utils/utils";
 import useStoreSystemBar from "@store/system.bar";
+import {bus} from "@renderer/utils/bus";
+
+
+
+function doSomething() {
+  console.log("子页面执行了逻辑");
+}
+
 
 const {ipcRendererChannel} = window
 
@@ -11,6 +19,8 @@ const text = ref('')
 const filePath = ref('')
 const useSystemBarStore = useStoreSystemBar()
 const pathCache = localStorage.getItem('markdown.path')
+let recentFiles = localStorage.getItem('recentFiles')
+recentFiles = recentFiles ? JSON.parse(recentFiles) : []
 const toolbars = [
   'bold',
   'underline',
@@ -44,7 +54,6 @@ const toolbars = [
   'previewOnly',
   'htmlPreview',
   'catalog',
-  'github',
 ];
 if (pathCache) {
   filePath.value = pathCache
@@ -56,8 +65,14 @@ function writeFile(path: string, val: string) {
     content: val
   }).then(res => {
     useSystemBarStore.setSystemBar({tips: res ? '保存成功' : '保存失败'})
+    const fileName = path.split(/[/\\]/).pop()
+    useSystemBarStore.setRecentFile({
+        label: fileName,
+        path,
+        time: new Date().getTime()
+    })
     setTimeout(() => {
-      useSystemBarStore.setSystemBar({tips: path.split(/[/\\]/).pop(), content: path})
+      useSystemBarStore.setSystemBar({tips: fileName, content: path})
     }, 200)
   })
 }
@@ -105,6 +120,70 @@ const handleUploadImg = async (files, callback) => {
 function clickInsert() {
 
 }
+
+async function handleCreateFile() {
+  const path = await ipcRendererChannel.openSaveDialog.invoke({
+    title: "新建文件",
+    defaultPath: `新建文件[${timeFormat(new Date().getTime(), 'mmddhhMMss')}]`,
+    filters: [{name: "Markdown", extensions: ["md"]}]
+  })
+  if (path.filePath) {
+    filePath.value = path.filePath
+    localStorage.setItem('markdown.path', filePath.value)
+    text.value = ''
+    localStorage.setItem('markdown.cache', '')
+  }
+}
+
+async function handleOpenFile() {
+  const path = await ipcRendererChannel.openDialog.invoke({
+    filters: [{name: '全部文件', extensions: ['md']}],
+    properties: ['openFile']
+  })
+  if (path.filePaths[0]) {
+    filePath.value = path.filePaths[0]
+    text.value = await ipcRendererChannel.readFile.invoke({path: filePath.value})
+    localStorage.setItem('markdown.path', filePath.value)
+  }
+}
+
+async function handleOpenRecent(file: any) {
+  text.value = await ipcRendererChannel.readFile.invoke({path: file.path})
+  filePath.value = file.path
+  localStorage.setItem('markdown.path', filePath.value)
+}
+
+function handleSaveFile() {
+  onMdSave(text.value)
+}
+
+async function handleSaveAsFile() {
+  const path = await ipcRendererChannel.openSaveDialog.invoke({
+    title: "新建文件",
+    defaultPath: `新建文件[${timeFormat(new Date().getTime(), 'mmddhhMMss')}]`,
+    filters: [{name: "Markdown", extensions: ["md"]}]
+  })
+  if (path.filePath) {
+    filePath.value = path.filePath
+    await onMdSave(text.value)
+  }
+}
+
+onMounted(() => {
+  bus.on("save", handleSaveFile);
+  bus.on("save-as", handleSaveAsFile);
+  bus.on("open-recent", handleOpenRecent);
+  bus.on("open", handleOpenFile);
+  bus.on("new", handleCreateFile);
+});
+
+onUnmounted(() => {
+  bus.off("save", handleSaveFile);
+  bus.off("save-as", handleSaveAsFile);
+  bus.off("open-recent", handleOpenRecent);
+  bus.off("open", handleOpenFile);
+  bus.off("new", handleCreateFile);
+});
 </script>
 
 <template>

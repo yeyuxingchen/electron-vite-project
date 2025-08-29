@@ -4,7 +4,7 @@
 
 <template>
   <div flex items-center justify-center font-size-12px h-full>
-    还没想好要写什么，容我三思...
+    别看了，还没想好要写什么...
   </div>
 </template>
 

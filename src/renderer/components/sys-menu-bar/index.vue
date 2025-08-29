@@ -5,11 +5,21 @@ import About from './about/index.vue'
 import Setting from './setting/index.vue'
 import {computed, reactive} from "vue";
 import router from "@renderer/router";
+import {bus} from "@renderer/utils/bus";
+import useStoreSystemBar from "@store/system.bar";
+import {watch} from 'vue'
 
-const { ipcRendererChannel } = window
+
+const {ipcRendererChannel} = window
+const useSystemBarStore = useStoreSystemBar()
+console.log(useSystemBarStore.recentFiles)
+watch(useSystemBarStore.recentFiles, (val) => {
+  console.log("数据监听", val)
+})
 
 interface MenuItemMe extends MenuItem {
   development?: boolean;
+  value?: object;
 }
 
 defineOptions({
@@ -25,7 +35,7 @@ const defaultClickHandler = () => {
 // 递归处理菜单项
 function processMenuItems(items: MenuItemMe[]): MenuItemMe[] {
   return items.filter(item => !item.development || process.env.NODE_ENV === 'development').map(item => {
-    const processedItem = { ...item };
+    const processedItem = {...item};
 
     // 如果没有onClick事件，则添加默认处理函数
     if (!processedItem.onClick) {
@@ -41,25 +51,43 @@ function processMenuItems(items: MenuItemMe[]): MenuItemMe[] {
   });
 }
 
-const menuData = {
+const menuData = () => ({
   items: [
     {
       label: "文件",
       children: [
-        {label: "新建"},
-        {label: "打开"},
+        {
+          label: "新建", onClick: () => {
+            bus.emit('new')
+          }
+        },
+        {
+          label: "打开", onClick: () => {
+            bus.emit('open')
+          }
+        },
         {
           label: "打开最近文件",
-          children: [
-            {label: "File 1...."},
-            {label: "File 2...."},
-            {label: "File 3...."},
-            {label: "File 4...."},
-            {label: "File 5...."},
-          ],
+          children: useSystemBarStore.recentFiles.map(file => {
+            return {
+              label: file.label,
+              value: file.path,
+              onClick: () => {
+                bus.emit('open-recent', file)
+              }
+            }
+          }),
         },
-        {label: "保存", divided: true},
-        {label: "另存为..."},
+        {
+          label: "保存", divided: true, onClick: () => {
+            bus.emit('save')
+          }
+        },
+        {
+          label: "另存为...", onClick: () => {
+            bus.emit('save-as')
+          }
+        },
         {label: "关闭"},
         {label: "退出"},
       ],
@@ -142,10 +170,11 @@ const menuData = {
   ],
   zIndex: 3,
   minWidth: 230
-};
+});
 
 const menuOptions = computed(() => {
-  return {...menuData, items: processMenuItems(menuData.items)}
+  const data = menuData()
+  return {...data, items: processMenuItems(data.items)}
 })
 
 const dialog = reactive({
@@ -163,7 +192,13 @@ const propsConfig = {
     radius: '5', title: '帮助', width: '400px', height: '200px'
   },
   setting: {
-    radius: '5', title: '设置', width: 'calc(100vw - 40vh)', height: '70vh', type: 'black-transparent', top: '11vh', destroyOnClose: true
+    radius: '5',
+    title: '设置',
+    width: 'calc(100vw - 40vh)',
+    height: '70vh',
+    type: 'black-transparent',
+    top: '11vh',
+    destroyOnClose: true
   },
   nothing: {
     radius: '5', title: '提示', type: 'success', width: '350px', height: '150px'
@@ -183,12 +218,12 @@ const propsConfig = {
 
     <fa-dialog v-model="dialog.nothing" v-bind="propsConfig.nothing">
       <div flex items-center justify-center font-size-12px h-full>
-        什么功能也没有，只是为了凑字数...
+        看来你也发现了，什么功能也没有...
       </div>
     </fa-dialog>
 
     <fa-dialog v-model="dialog.setting" v-bind="propsConfig.setting">
-      <setting />
+      <setting/>
     </fa-dialog>
 
     <fa-box v-model="box.test" radius="5px" icon="calc" title="计算器" height="380px" width="260px">
@@ -217,20 +252,25 @@ const propsConfig = {
 :global(#mx-menu-default-container) {
   z-index: 3000 !important;
 }
-:global(.mx-context-menu) , :global(.mx-context-menu-item-sperator){
+
+:global(.mx-context-menu), :global(.mx-context-menu-item-sperator) {
   background: rgb(var(--sys-bar-background)) !important;
 }
+
 :global(.mx-context-menu-item-sperator:after) {
   background: rgb(var(--sys-bar-border)) !important;
 }
-:global(.mx-context-menu-item){
-  background: rgb(var(--sys-bar-background))!important;
+
+:global(.mx-context-menu-item) {
+  background: rgb(var(--sys-bar-background)) !important;
 }
-:global(.mx-context-menu-item:hover), :global(.mx-menu-bar-item.active), :global(.mx-menu-bar-item:hover), :global(.mx-context-menu-item.open){
-  background: rgb(var(--sys-bar-background-hover))!important;
+
+:global(.mx-context-menu-item:hover), :global(.mx-menu-bar-item.active), :global(.mx-menu-bar-item:hover), :global(.mx-context-menu-item.open) {
+  background: rgb(var(--sys-bar-background-hover)) !important;
   color: rgb(var(--sys-bar-color)) !important;
 }
-:global(.mx-item-row){
+
+:global(.mx-item-row) {
   color: rgb(var(--sys-bar-color)) !important;
 }
 </style>
